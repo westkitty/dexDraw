@@ -1,0 +1,9 @@
+{
+  "files": [],
+  "references": [
+    { "path": "./apps/client-web" },
+    { "path": "./apps/server-api" },
+    { "path": "./packages/shared-protocol" },
+    { "path": "./packages/shared-core" }
+  ]
+}
