@@ -4,7 +4,9 @@ import { registerCors } from './plugins/cors.js';
 import { registerRateLimit } from './plugins/rateLimit.js';
 import { registerWebSocket } from './plugins/websocket.js';
 import { healthRoutes } from './routes/health.js';
-import { wsRoutes } from './routes/ws.js';
+import { createWsRoutes } from './routes/ws.js';
+import { getDb } from './db/client.js';
+import { RoomManager } from './rooms/RoomManager.js';
 
 export async function buildApp() {
   const env = loadEnv();
@@ -22,6 +24,12 @@ export async function buildApp() {
           },
   });
 
+  // Database
+  const db = getDb(env.DATABASE_URL);
+
+  // Room manager
+  const roomManager = new RoomManager(db, app.log);
+
   // Plugins
   await registerCors(app, env);
   await registerRateLimit(app);
@@ -29,7 +37,19 @@ export async function buildApp() {
 
   // Routes
   await app.register(healthRoutes);
-  await app.register(wsRoutes);
+  await app.register(createWsRoutes(roomManager));
 
-  return { app, env };
+  // Long-poll fallback routes (for P08)
+  app.get('/api/poll', async (req) => {
+    const { roomId, since } = req.query as { roomId: string; since: string };
+    // Placeholder — P08 will implement full long-poll
+    return { roomId, since: Number(since), ops: [] };
+  });
+
+  app.post('/api/ops', async (req) => {
+    // Placeholder — P08 will implement
+    return { ok: true };
+  });
+
+  return { app, env, roomManager };
 }
