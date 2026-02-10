@@ -33,3 +33,7 @@ export { PROTOCOL_VERSION, EnvelopeType, OpType, ObjectType } from './wire/const
 export { encodeEnvelope } from './wire/encode.js';
 export { decodeC2S, decodeS2C } from './wire/decode.js';
 export type { DecodeResult } from './wire/decode.js';
+
+// Templates
+export { TEMPLATES, getTemplateById } from './templates/index.js';
+export type { BoardTemplate, TemplateObject } from './templates/index.js';

@@ -1,7 +1,10 @@
 import { Canvas } from './components/Canvas/Canvas';
-import { Toolbar } from './components/Toolbar/Toolbar';
+import { CommentOverlay } from './components/Comments/CommentOverlay';
+import { CommentPanel } from './components/Comments/CommentPanel';
+import { ParkingLot } from './components/ParkingLot/ParkingLot';
 import { StatusBar } from './components/StatusBar';
 import { TimelineScrubber } from './components/Timeline/TimelineScrubber';
+import { Toolbar } from './components/Toolbar/Toolbar';
 
 export function App() {
   return (
@@ -15,8 +18,11 @@ export function App() {
     >
       <Toolbar />
       <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <Canvas />
-        {/* Right sidebar placeholder */}
+        <div style={{ position: 'relative', flex: 1 }}>
+          <Canvas />
+          <CommentOverlay />
+        </div>
+        {/* Right sidebar */}
         <div
           style={{
             width: 240,
@@ -24,11 +30,15 @@ export function App() {
             background: 'var(--surface)',
             padding: 12,
             overflowY: 'auto',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Properties</div>
+          <div style={{ fontSize: 13, color: 'var(--text-muted)', flex: 1 }}>Properties</div>
+          <ParkingLot />
         </div>
       </div>
+      <CommentPanel onAddReply={() => {}} onResolve={() => {}} onDelete={() => {}} />
       <TimelineScrubber />
       <StatusBar />
     </div>

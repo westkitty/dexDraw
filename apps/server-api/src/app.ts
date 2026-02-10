@@ -6,6 +6,7 @@ import { registerWebSocket } from './plugins/websocket.js';
 import { healthRoutes } from './routes/health.js';
 import { createWsRoutes } from './routes/ws.js';
 import { createCheckpointRoutes } from './routes/checkpoints.js';
+import { createBoardRoutes } from './routes/boards.js';
 import { getDb } from './db/client.js';
 import { RoomManager } from './rooms/RoomManager.js';
 
@@ -40,6 +41,7 @@ export async function buildApp() {
   await app.register(healthRoutes);
   await app.register(createWsRoutes(roomManager));
   await app.register(createCheckpointRoutes(roomManager));
+  await app.register(createBoardRoutes(db));
 
   // Long-poll fallback routes (for P08)
   app.get('/api/poll', async (req) => {
