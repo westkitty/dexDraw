@@ -2,7 +2,7 @@
 
 ## 1. Project Overview
 
-**dexDraw** is a shared real-time whiteboard built for speed, determinism, and privacy. It uses a custom ink engine to ensure that every participant sees the exact same drawing fidelity, regardless of their device or network speed.
+**DexDraw** is a shared real-time whiteboard built for speed, determinism, and privacy. It uses a custom ink engine to ensure that every participant sees the exact same drawing fidelity, regardless of their device or network speed.
 
 ### Core Philosophy
 - **Local-First / Self-Hosted:** No cloud dependency.
@@ -50,7 +50,7 @@ Ensure you have the following installed on your machine:
 
 ## 3. Docker Deployment (Recommended)
 
-For the most reliable experience, we recommend running dexDraw in Docker. This ensures all dependencies (Node, Postgres, Nginx) are configured exactly as intended.
+For the most reliable experience, we recommend running DexDraw in Docker. This ensures all dependencies (Node, Postgres, Nginx) are configured exactly as intended.
 
 ### 3.1 Prerequisites
 -   **Docker Desktop**: Download from [docker.com](https://www.docker.com/products/docker-desktop/)
@@ -111,7 +111,7 @@ For the most reliable experience, we recommend running dexDraw in Docker. This e
 
 ## 4. Native Tailscale Integration
 
-dexDraw is designed to be "Tailscale Native". If you run it locally without Docker, it will automatically bind to your Tailscale interface.
+DexDraw is designed to be "Tailscale Native". If you run it locally without Docker, it will automatically bind to your Tailscale interface.
 
 ### How to use:
 1.  Ensure Tailscale is installed and running on your Mac/PC.
@@ -126,7 +126,7 @@ If you need to share with someone *outside* your Tailnet:
 ```bash
 tailscale funnel 3000
 ```
-This will give you a public URL (e.g., `https://my-machine.tailnet.ts.net`) that routes securely to your local dexDraw instance.
+This will give you a public URL (e.g., `https://my-machine.tailnet.ts.net`) that routes securely to your local DexDraw instance.
 
 ---
 

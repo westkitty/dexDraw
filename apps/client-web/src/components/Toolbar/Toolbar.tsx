@@ -34,7 +34,7 @@ export function Toolbar() {
           color: 'var(--accent)',
         }}
       >
-        dexDraw
+        DexDraw
       </span>
       {tools.map((t) => (
         <ToolButton

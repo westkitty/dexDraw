@@ -15,9 +15,9 @@
 
 </div>
 
-# dexDraw
+# DexDraw
 
-A high-performance, real-time shared whiteboard for business meetings. **dexDraw** runs locally or on your private server, offering server-authoritative state management and a deterministic ink engine for smooth, latency-free collaboration.
+A high-performance, real-time shared whiteboard for business meetings. **DexDraw** runs locally or on your private server, offering server-authoritative state management and a deterministic ink engine for smooth, latency-free collaboration.
 
 ## Key Features
 
@@ -80,6 +80,7 @@ docker-compose up --build
 Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
 -   **Frontend**: [http://localhost:3000](http://localhost:3000)
 -   **API**: [http://localhost:4000](http://localhost:4000)
+-   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server`).
 
 ### 4. Management Commands
 
@@ -89,7 +90,7 @@ Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
 
 ## Native Usage (No Docker)
 
-If you prefer running directly on your machine (e.g., for development), dexDraw integrates seamlessly with Tailscale.
+If you prefer running directly on your machine (e.g., for development), DexDraw integrates seamlessly with Tailscale.
 
 1.  **Start the App**:
     ```bash

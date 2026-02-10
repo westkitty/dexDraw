@@ -2,7 +2,7 @@
   "name": "dexdraw",
   "private": true,
   "version": "0.0.0",
-  "description": "dexDraw — shared real-time whiteboard for business meetings",
+  "description": "DexDraw — shared real-time whiteboard for business meetings",
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
