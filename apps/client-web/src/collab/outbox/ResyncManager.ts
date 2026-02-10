@@ -1,5 +1,6 @@
 import { useBoardStore } from '../../store/useBoardStore';
 import { useCanvasStore } from '../../store/useCanvasStore';
+import { useCheckpointStore } from '../../store/useCheckpointStore';
 import type { Outbox } from './Outbox';
 
 export class ResyncManager {
@@ -24,7 +25,7 @@ export class ResyncManager {
 
       if (msg.users && Array.isArray(msg.users)) {
         boardStore.setUsers(
-          (msg.users as Array<{ clientId: string; displayName: string; color: string }>),
+          msg.users as Array<{ clientId: string; displayName: string; color: string }>,
         );
       }
       return;
@@ -43,7 +44,7 @@ export class ResyncManager {
       }
 
       // ACK if this is our own op
-      if (clientId === this.outbox['clientId']) {
+      if (clientId === this.outbox.ownClientId) {
         this.outbox.acknowledge(clientSeq);
       }
 
@@ -68,6 +69,48 @@ export class ResyncManager {
       boardStore.setUsers(boardStore.users.filter((u) => u.clientId !== leftId));
       return;
     }
+
+    if (msg.type === 'checkpointRestored') {
+      this.handleCheckpointRestored(msg);
+      return;
+    }
+  }
+
+  /** Handle a full board state reset after checkpoint restore. */
+  private handleCheckpointRestored(msg: Record<string, unknown>): void {
+    const restoreServerSeq = msg.restoreServerSeq as number;
+    const objects = msg.objects as Record<string, Record<string, unknown>> | undefined;
+
+    const canvasStore = useCanvasStore.getState();
+    const boardStore = useBoardStore.getState();
+    const checkpointStore = useCheckpointStore.getState();
+
+    // If in replay mode, exit it
+    if (checkpointStore.isReplaying) {
+      checkpointStore.clearReplay();
+    }
+
+    // Clear all existing canvas objects
+    for (const id of canvasStore.objects.keys()) {
+      canvasStore.removeObject(id);
+    }
+
+    // Rebuild from restored state
+    if (objects) {
+      for (const [id, data] of Object.entries(objects)) {
+        canvasStore.addObject({
+          id,
+          type: (data.objectType as string) ?? (data.type as string) ?? 'unknown',
+          zIndex: (data.zIndex as number) ?? 0,
+          data,
+        });
+      }
+    }
+
+    // Update lastSeenServerSeq
+    if (restoreServerSeq > boardStore.lastSeenServerSeq) {
+      boardStore.setLastSeenServerSeq(restoreServerSeq);
+    }
   }
 
   private applyOp(opType: string, payload: Record<string, unknown>): void {
@@ -81,7 +124,7 @@ export class ResyncManager {
             id: objectId,
             type: (payload.objectType as string) ?? 'unknown',
             zIndex: canvasStore.objects.size,
-            data: payload.data as Record<string, unknown> ?? {},
+            data: (payload.data as Record<string, unknown>) ?? {},
           });
         }
         break;
@@ -129,6 +172,18 @@ export class ResyncManager {
         }
         break;
       }
+      case 'checkpointCreate': {
+        const checkpointStore = useCheckpointStore.getState();
+        checkpointStore.addCheckpoint({
+          checkpointId: payload.checkpointId as string,
+          name: (payload.name as string) ?? null,
+          atServerSeq: useBoardStore.getState().lastSeenServerSeq,
+          createdBy: 'unknown',
+          createdAt: new Date().toISOString(),
+        });
+        break;
+      }
+      // checkpointRestore is handled via the 'checkpointRestored' message type
     }
   }
 

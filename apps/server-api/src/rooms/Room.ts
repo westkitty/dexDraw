@@ -1,10 +1,8 @@
+import { and, asc, desc, eq, gt, lte } from 'drizzle-orm';
 import type { WebSocket } from 'ws';
 import type { Database } from '../db/client.js';
+import { checkpoints, ops, snapshots } from '../db/schema/index.js';
 import type { Logger } from '../lib/logger.js';
-import { ops, snapshots } from '../db/schema/index.js';
-import { eq, and, gt, desc } from 'drizzle-orm';
-import { decodeC2S } from '@dexdraw/shared-protocol';
-import type { DurableOp } from '@dexdraw/shared-protocol';
 
 interface ConnectedClient {
   clientId: string;
@@ -27,8 +25,16 @@ const PRESENCE_THROTTLE_MS = 50; // 20Hz
 const ROOM_GRACE_PERIOD_MS = 30_000;
 
 const USER_COLORS = [
-  '#4a9eff', '#ff6b6b', '#51cf66', '#fcc419', '#cc5de8',
-  '#ff922b', '#20c997', '#845ef7', '#f06595', '#22b8cf',
+  '#4a9eff',
+  '#ff6b6b',
+  '#51cf66',
+  '#fcc419',
+  '#cc5de8',
+  '#ff922b',
+  '#20c997',
+  '#845ef7',
+  '#f06595',
+  '#22b8cf',
 ];
 
 export class Room {
@@ -64,7 +70,9 @@ export class Room {
 
     if (latestSnapshot) {
       startSeq = latestSnapshot.atServerSeq;
-      const snapshotData = latestSnapshot.data as { objects?: Record<string, Record<string, unknown>> };
+      const snapshotData = latestSnapshot.data as {
+        objects?: Record<string, Record<string, unknown>>;
+      };
       if (snapshotData.objects) {
         for (const [id, obj] of Object.entries(snapshotData.objects)) {
           this.objects.set(id, obj);
@@ -94,10 +102,18 @@ export class Room {
       }
     }
 
-    this.log.info({ boardId: this.boardId, seq: this.currentSeq, objects: this.objects.size }, 'Room loaded');
+    this.log.info(
+      { boardId: this.boardId, seq: this.currentSeq, objects: this.objects.size },
+      'Room loaded',
+    );
   }
 
-  addClient(clientId: string, socket: WebSocket, displayName: string, lastSeenServerSeq: number): void {
+  addClient(
+    clientId: string,
+    socket: WebSocket,
+    displayName: string,
+    lastSeenServerSeq: number,
+  ): void {
     if (this.destroyTimer) {
       clearTimeout(this.destroyTimer);
       this.destroyTimer = null;
@@ -265,8 +281,30 @@ export class Room {
         payload: op,
       });
 
-      // Snapshot check
-      if (serverSeq % SNAPSHOT_INTERVAL === 0 && !this.snapshotPending) {
+      // Handle checkpoint-specific side effects
+      if (opType === 'checkpointCreate') {
+        const checkpointId = op.checkpointId as string;
+        const checkpointName = (op.name as string) ?? null;
+        // Force a snapshot at this serverSeq
+        if (!this.snapshotPending) {
+          this.snapshotPending = true;
+          this.createSnapshot(serverSeq)
+            .then(() => this.persistCheckpoint(checkpointId, checkpointName, serverSeq, clientId))
+            .finally(() => {
+              this.snapshotPending = false;
+            });
+        }
+      } else if (opType === 'checkpointRestore') {
+        const checkpointId = op.checkpointId as string;
+        await this.restoreToCheckpoint(checkpointId, serverSeq, clientId);
+      }
+
+      // Snapshot check (regular interval)
+      if (
+        opType !== 'checkpointCreate' &&
+        serverSeq % SNAPSHOT_INTERVAL === 0 &&
+        !this.snapshotPending
+      ) {
         this.snapshotPending = true;
         this.createSnapshot(serverSeq).finally(() => {
           this.snapshotPending = false;
@@ -315,7 +353,10 @@ export class Room {
         const objectId = payload.objectId as string;
         const existing = this.objects.get(objectId);
         if (existing && payload.patch) {
-          this.objects.set(objectId, { ...existing, ...(payload.patch as Record<string, unknown>) });
+          this.objects.set(objectId, {
+            ...existing,
+            ...(payload.patch as Record<string, unknown>),
+          });
         }
         break;
       }
@@ -339,7 +380,174 @@ export class Room {
         }
         break;
       }
+      // checkpointCreate and checkpointRestore don't mutate in-memory objects during applyOpToState;
+      // they are handled specially in handleDurable.
     }
+  }
+
+  /** Persist a named checkpoint record linked to the snapshot at atServerSeq. */
+  private async persistCheckpoint(
+    checkpointId: string,
+    name: string | null,
+    atServerSeq: number,
+    createdBy: string,
+  ): Promise<void> {
+    try {
+      await this.db.insert(checkpoints).values({
+        checkpointId,
+        boardId: this.boardId,
+        name,
+        atServerSeq,
+        createdBy,
+      });
+      this.log.info({ boardId: this.boardId, checkpointId, atServerSeq }, 'Checkpoint created');
+    } catch (err) {
+      this.log.error({ err, boardId: this.boardId, checkpointId }, 'Failed to persist checkpoint');
+    }
+  }
+
+  /** Restore board state to the snapshot associated with a checkpoint. */
+  private async restoreToCheckpoint(
+    checkpointId: string,
+    restoreOpServerSeq: number,
+    _clientId: string,
+  ): Promise<void> {
+    try {
+      // Find the checkpoint
+      const [cp] = await this.db
+        .select()
+        .from(checkpoints)
+        .where(eq(checkpoints.checkpointId, checkpointId))
+        .limit(1);
+
+      if (!cp) {
+        this.log.warn({ boardId: this.boardId, checkpointId }, 'Checkpoint not found for restore');
+        return;
+      }
+
+      // Find the snapshot at that serverSeq
+      const [snap] = await this.db
+        .select()
+        .from(snapshots)
+        .where(and(eq(snapshots.boardId, this.boardId), lte(snapshots.atServerSeq, cp.atServerSeq)))
+        .orderBy(desc(snapshots.atServerSeq))
+        .limit(1);
+
+      if (!snap) {
+        this.log.warn(
+          { boardId: this.boardId, checkpointId },
+          'Snapshot not found for checkpoint restore',
+        );
+        return;
+      }
+
+      // Rebuild in-memory state from snapshot
+      this.objects.clear();
+      const snapshotData = snap.data as { objects?: Record<string, Record<string, unknown>> };
+      if (snapshotData.objects) {
+        for (const [id, obj] of Object.entries(snapshotData.objects)) {
+          this.objects.set(id, obj);
+        }
+      }
+
+      // Replay ops between snapshot and checkpoint's atServerSeq
+      if (snap.atServerSeq < cp.atServerSeq) {
+        const replayOps = await this.db
+          .select()
+          .from(ops)
+          .where(
+            and(
+              eq(ops.boardId, this.boardId),
+              gt(ops.serverSeq, snap.atServerSeq),
+              lte(ops.serverSeq, cp.atServerSeq),
+            ),
+          )
+          .orderBy(asc(ops.serverSeq));
+
+        for (const op of replayOps) {
+          this.applyOpToState(op.opType, op.payload as Record<string, unknown>);
+        }
+      }
+
+      // Force a new snapshot at the restore op's serverSeq with the restored state
+      await this.createSnapshot(restoreOpServerSeq);
+
+      // Broadcast a full state reset to all clients
+      const objectsData: Record<string, Record<string, unknown>> = {};
+      for (const [id, obj] of this.objects) {
+        objectsData[id] = obj;
+      }
+      this.broadcastAll({
+        type: 'checkpointRestored',
+        checkpointId,
+        atServerSeq: cp.atServerSeq,
+        restoreServerSeq: restoreOpServerSeq,
+        objects: objectsData,
+      });
+
+      this.log.info(
+        { boardId: this.boardId, checkpointId, restoredToSeq: cp.atServerSeq },
+        'Board restored to checkpoint',
+      );
+    } catch (err) {
+      this.log.error({ err, boardId: this.boardId, checkpointId }, 'Failed to restore checkpoint');
+    }
+  }
+
+  /** List all checkpoints for this board (used by REST API). */
+  async listCheckpoints(): Promise<
+    Array<{
+      checkpointId: string;
+      name: string | null;
+      atServerSeq: number;
+      createdBy: string;
+      createdAt: Date;
+    }>
+  > {
+    const rows = await this.db
+      .select({
+        checkpointId: checkpoints.checkpointId,
+        name: checkpoints.name,
+        atServerSeq: checkpoints.atServerSeq,
+        createdBy: checkpoints.createdBy,
+        createdAt: checkpoints.createdAt,
+      })
+      .from(checkpoints)
+      .where(eq(checkpoints.boardId, this.boardId))
+      .orderBy(asc(checkpoints.atServerSeq));
+
+    return rows;
+  }
+
+  /** Get ops within a range for time-travel replay (used by REST API). */
+  async getOpsForReplay(fromSeq: number, toSeq: number): Promise<PersistedOp[]> {
+    const rows = await this.db
+      .select()
+      .from(ops)
+      .where(
+        and(eq(ops.boardId, this.boardId), gt(ops.serverSeq, fromSeq), lte(ops.serverSeq, toSeq)),
+      )
+      .orderBy(asc(ops.serverSeq));
+
+    return rows.map((r) => ({
+      serverSeq: r.serverSeq,
+      clientId: r.clientId,
+      clientSeq: r.clientSeq,
+      opType: r.opType,
+      payload: r.payload,
+    }));
+  }
+
+  /** Get snapshot at or before a given serverSeq (used by REST API). */
+  async getSnapshotAt(atSeq: number): Promise<{ atServerSeq: number; data: unknown } | null> {
+    const [snap] = await this.db
+      .select()
+      .from(snapshots)
+      .where(and(eq(snapshots.boardId, this.boardId), lte(snapshots.atServerSeq, atSeq)))
+      .orderBy(desc(snapshots.atServerSeq))
+      .limit(1);
+
+    return snap ? { atServerSeq: snap.atServerSeq, data: snap.data } : null;
   }
 
   private async createSnapshot(atSeq: number): Promise<void> {
@@ -362,7 +570,8 @@ export class Room {
   }
 
   private sendTo(socket: WebSocket, msg: unknown): void {
-    if (socket.readyState === 1) { // OPEN
+    if (socket.readyState === 1) {
+      // OPEN
       socket.send(JSON.stringify(msg));
     }
   }

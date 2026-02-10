@@ -74,6 +74,10 @@ export class Outbox {
     }
   }
 
+  get ownClientId(): string {
+    return this.clientId;
+  }
+
   get nextClientSeq(): number {
     return this.clientSeqCounter;
   }

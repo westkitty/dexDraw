@@ -1,6 +1,7 @@
 import { Canvas } from './components/Canvas/Canvas';
 import { Toolbar } from './components/Toolbar/Toolbar';
 import { StatusBar } from './components/StatusBar';
+import { TimelineScrubber } from './components/Timeline/TimelineScrubber';
 
 export function App() {
   return (
@@ -28,6 +29,7 @@ export function App() {
           <div style={{ fontSize: 13, color: 'var(--text-muted)' }}>Properties</div>
         </div>
       </div>
+      <TimelineScrubber />
       <StatusBar />
     </div>
   );
