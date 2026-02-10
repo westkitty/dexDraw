@@ -9,28 +9,31 @@ WORKDIR /app
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY tsconfig.base.json tsconfig.json ./
 
-# Copy package manifests
+# Copy package manifests (preserve directory structure)
 COPY packages/shared-protocol/package.json packages/shared-protocol/
 COPY packages/shared-core/package.json packages/shared-core/
 COPY apps/client-web/package.json apps/client-web/
+# Server API not needed for client build
 
-# Install dependencies
+# Install dependencies (frozen lockfile for reproducibility)
 RUN pnpm install --frozen-lockfile
 
-# Copy source
+# Copy source code
 COPY packages/shared-protocol/ packages/shared-protocol/
 COPY packages/shared-core/ packages/shared-core/
 COPY apps/client-web/ apps/client-web/
 
-# Build
+# Build the client
+# Filtering by package name ensures we only build what is needed
 RUN pnpm --filter client-web build
 
-# Serve with nginx
+# Phase 2: Serve with Nginx
 FROM nginx:alpine
 
+# Copy built assets from builder stage
 COPY --from=builder /app/apps/client-web/dist /usr/share/nginx/html
 
-# SPA fallback: redirect all routes to index.html
+# Custom Nginx config to handle SPA routing (rewrites to index.html)
 RUN echo 'server { \
   listen 80; \
   root /usr/share/nginx/html; \
@@ -41,3 +44,5 @@ RUN echo 'server { \
 }' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

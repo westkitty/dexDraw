@@ -52,6 +52,14 @@ To build for production:
 pnpm build
 ```
 
+## Docker
+
+You can run the entire stack (Client, Server, Postgres) using Docker Compose:
+
+```bash
+docker-compose up --build
+```
+
 ## Architecture
 
 - **Monorepo:** Managed with `pnpm` workspaces.
