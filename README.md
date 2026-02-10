@@ -31,17 +31,31 @@ A high-performance, real-time shared whiteboard for business meetings. **DexDraw
 
 ### Prerequisites
 - Node.js >= 22
-- pnpm >= 9
+- pnpm >= 9 (Recommended: `npm install -g pnpm`)
 
-### Quick Start (Development)
-Clone the repository and start the development server:
+### Quick Start (Clean Machine)
+We provide single-command dev flows for the whole stack or specific parts.
 
+**Option A: Run Everything (Client + Server)**
 ```bash
-git clone https://github.com/westkitty/dexDraw.git
-cd dexDraw
+git clone https://github.com/westkitty/DexDraw.git
+cd DexDraw
 pnpm install
 pnpm dev
 ```
+-   **Client**: http://localhost:5173
+-   **Server**: http://localhost:4000
+
+**Option B: Run Client Only**
+```bash
+pnpm dev:client
+```
+
+**Option C: Run Server Only**
+```bash
+pnpm dev:server
+```
+*(Note: Server requires `tsx`, which is installed automatically via devDependencies.)*
 
 This will start both the `client-web` (React/Vite) and `server-api` (Fastify/Node) processes concurrently.
 
@@ -78,15 +92,21 @@ docker-compose up --build
 
 ### 3. Access the Application
 Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
--   **Frontend**: [http://localhost:3000](http://localhost:3000)
+-   **Frontend**: [http://localhost:5173](http://localhost:5173)
 -   **API**: [http://localhost:4000](http://localhost:4000)
--   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server`).
+-   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server:5173`).
 
 ### 4. Management Commands
 
 -   **Run in Background**: `docker-compose up -d`
 -   **View Logs**: `docker-compose logs -f`
 -   **Stop**: `docker-compose down`
+
+### 5. Client-Only Docker (Dev Mode)
+To run just the frontend in a container (with hot reload):
+```bash
+docker-compose -f docker-compose.client-dev.yml up
+```
 
 ## Native Usage (No Docker)
 
@@ -97,12 +117,12 @@ If you prefer running directly on your machine (e.g., for development), DexDraw 
     pnpm dev
     ```
 2.  **Access Remotely**:
-    Simply open your machine's **Tailscale IP**: `http://100.x.y.z:3000`.
+    Simply open your machine's **Tailscale IP**: `http://100.x.y.z:5173`.
     *We automatically bind to all network interfaces, so no extra config is needed.*
 
 ### Troubleshooting
 
--   **"Port already allocated"**: Modify `docker-compose.yml` to map to a different port (e.g., `'3001:80'`).
+-   **"Port already allocated"**: Modify `docker-compose.yml` to use a different port.
 -   **"Connection refused to postgres"**: Simply restart the containers: `docker-compose restart server`.
 
 ## Architecture

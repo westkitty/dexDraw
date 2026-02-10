@@ -6,7 +6,11 @@
   "scripts": {
     "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
-    "share": "echo 'Run \"tailscale funnel 3000\" to accept public traffic, or use your Tailnet IP for private access.'",
+    "dev:client": "pnpm --filter @dexdraw/client-web dev",
+    "dev:server": "pnpm --filter @dexdraw/server-api dev",
+    "dev:tailnet": "./start-dev.sh",
+    "share:client": "echo 'Run \"tailscale funnel 5173\" to accept public traffic.'",
+    "share:server": "echo 'Run \"tailscale funnel 4000\" to accept public traffic.'",
     "test": "pnpm -r test",
     "typecheck": "tsc -b",
     "lint": "biome check .",
@@ -19,6 +23,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.14",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^2.1.9"
   }

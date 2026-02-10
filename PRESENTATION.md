@@ -42,9 +42,7 @@ Ensure you have the following installed on your machine:
     ```
     This command runs `turbo run dev` equivalent, starting:
     -   **Client:** `http://localhost:5173` (Vite)
-    -   **Server:** `http://localhost:3000` (Fastify)
-
-    -   **Server:** `http://localhost:3000` (Fastify)
+    -   **Server:** `http://localhost:4000` (Fastify)
 
 ---
 
@@ -73,9 +71,9 @@ For the most reliable experience, we recommend running DexDraw in Docker. This e
 
 3.  **Access the Application**
     Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
-    -   **Frontend**: [http://localhost:3000](http://localhost:3000)
+    -   **Frontend**: [http://localhost:5173](http://localhost:5173)
     -   **API**: [http://localhost:4000](http://localhost:4000)
-    -   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server`).
+    -   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server:5173`).
 
 ### 3.3 Managing the Containers
 
@@ -95,14 +93,11 @@ For the most reliable experience, we recommend running DexDraw in Docker. This e
 
 ### 3.4 Troubleshooting
 
-**"Bind for 0.0.0.0:3000 failed: port is already allocated"**
-> This means another program is using port 3000. Stop other apps or modify `docker-compose.yml` to map to a different port (e.g., `'3001:80'`).
+**"Bind for 0.0.0.0:5173 failed: port is already allocated"**
+> This means another program is using port 5173. Stop other apps or modify `docker-compose.yml`.
 
 **"Connection refused to postgres"**
 > The server might start before the database is ready. The `depends_on` condition in our compose file handles this, but if it fails, simply restart the containers: `docker-compose restart server`.
-
-**"Tailscale won't connect"**
-> Ensure your `TS_AUTHKEY` is valid and reusable if you plan to restart often. Check logs with `docker-compose logs tailscale`.
 
 **"Tailscale won't connect"**
 > Ensure your `TS_AUTHKEY` is valid and reusable if you plan to restart often. Check logs with `docker-compose logs tailscale`.
@@ -117,14 +112,14 @@ DexDraw is designed to be "Tailscale Native". If you run it locally without Dock
 1.  Ensure Tailscale is installed and running on your Mac/PC.
 2.  Run `pnpm dev`.
 3.  On any other device in your Tailnet (e.g., iPad, Phone), navigate to:
-    `http://<YOUR-MACHINE-TAILSCALE-IP>:3000`
+    `http://<YOUR-MACHINE-TAILSCALE-IP>:5173`
     or
-    `http://<YOUR-MACHINE-NAME>:3000` (MagicDNS)
+    `http://<YOUR-MACHINE-NAME>:5173` (MagicDNS)
 
 ### Sharing via Funnel
 If you need to share with someone *outside* your Tailnet:
 ```bash
-tailscale funnel 3000
+tailscale funnel 5173
 ```
 This will give you a public URL (e.g., `https://my-machine.tailnet.ts.net`) that routes securely to your local DexDraw instance.
 
