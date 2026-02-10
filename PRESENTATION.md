@@ -75,6 +75,7 @@ For the most reliable experience, we recommend running dexDraw in Docker. This e
     Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
     -   **Frontend**: [http://localhost:3000](http://localhost:3000)
     -   **API**: [http://localhost:4000](http://localhost:4000)
+    -   **Tailscale**: If running with `TS_AUTHKEY`, access via your MagicDNS name (e.g., `http://dexdraw-server`).
 
 ### 3.3 Managing the Containers
 
@@ -99,6 +100,9 @@ For the most reliable experience, we recommend running dexDraw in Docker. This e
 
 **"Connection refused to postgres"**
 > The server might start before the database is ready. The `depends_on` condition in our compose file handles this, but if it fails, simply restart the containers: `docker-compose restart server`.
+
+**"Tailscale won't connect"**
+> Ensure your `TS_AUTHKEY` is valid and reusable if you plan to restart often. Check logs with `docker-compose logs tailscale`.
 
 ---
 

@@ -45,5 +45,23 @@ services:
     depends_on:
       - server
 
+  # Tailscale Sidecar (Optional Remote Access)
+  tailscale:
+    image: tailscale/tailscale:latest
+    hostname: dexdraw-server
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY:-}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_USERSPACE=false
+    volumes:
+      - tsdata:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    restart: unless-stopped
+
+
 volumes:
   pgdata:
+  tsdata:

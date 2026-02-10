@@ -54,15 +54,22 @@ pnpm build
 
 ## Docker (Recommended)
 
-For the most reliable experience, we recommend running dexDraw in Docker. This ensures all dependencies (Node, Postgres, Nginx) are configured exactly as intended.
+### 1. Configure Tailscale (Optional)
+To access your whiteboard securely from anywhere:
+1.  Go to [Tailscale Admin](https://login.tailscale.com/admin/settings/keys).
+2.  Click **Generate auth key**.
+3.  Copy the key (starts with `tskey-auth-...`).
 
-### 1. Prerequisites
--   **Docker Desktop**: Download from [docker.com](https://www.docker.com/products/docker-desktop/)
--   **RAM**: Allocate at least 4GB of RAM to Docker for building.
+### 2. Start the App
+Run one of the following commands in your terminal:
 
-### 2. Quick Start
-Run the entire stack (Client, Server, Postgres) with a single command:
+**Option A: With Tailscale (Remote Access)**
+Replace `tskey-auth-XXX` with your actual key:
+```bash
+TS_AUTHKEY=tskey-auth-XXX docker-compose up --build
+```
 
+**Option B: Local Only**
 ```bash
 docker-compose up --build
 ```
