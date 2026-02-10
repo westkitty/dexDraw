@@ -1,10 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { describe, expect, it } from 'vitest';
-import {
-  C2SEnvelope,
-  type S2CEnvelope,
-  validateEnvelopeWithDirection,
-} from '../schemas/envelope.js';
+import { type S2CEnvelope, validateEnvelopeWithDirection } from '../schemas/envelope.js';
 import { PROTOCOL_VERSION } from '../wire/constants.js';
 
 function makeC2SDurable() {

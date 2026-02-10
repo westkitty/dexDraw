@@ -39,7 +39,7 @@ export class InputEngine {
   }
 
   private extractPoint(e: PointerEvent): RawPoint {
-    const rect = this.canvas!.getBoundingClientRect();
+    const rect = this.canvas?.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
@@ -50,7 +50,7 @@ export class InputEngine {
 
   private extractCoalesced(e: PointerEvent): RawPoint[] {
     const coalesced = e.getCoalescedEvents?.() ?? [e];
-    const rect = this.canvas!.getBoundingClientRect();
+    const rect = this.canvas?.getBoundingClientRect();
     return coalesced.map((ce) => ({
       x: ce.clientX - rect.left,
       y: ce.clientY - rect.top,

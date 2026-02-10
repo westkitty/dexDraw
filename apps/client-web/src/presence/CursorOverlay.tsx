@@ -36,6 +36,7 @@ export function CursorOverlay() {
             viewBox="0 0 16 20"
             style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' }}
           >
+            <title>User Cursor</title>
             <path d="M0 0L12 10L5 10L8 18L5 19L2 11L0 14Z" fill={cursor.color} />
           </svg>
           {/* Name label */}

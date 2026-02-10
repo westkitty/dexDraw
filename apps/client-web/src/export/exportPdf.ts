@@ -44,7 +44,7 @@ export async function exportPdf(
   }
 
   // Extract text objects
-  addTextContent(doc, objects, pageWidth, pageHeight);
+  return addTextContent(doc, objects, pageWidth, pageHeight);
 }
 
 function addTextContent(

@@ -17,7 +17,7 @@ import ws from 'k6/ws';
 const WS_URL = __ENV.WS_URL || 'ws://localhost:4000/ws/test-board';
 
 export const options = {
-  vus: parseInt(__ENV.VUS) || 10,
+  vus: parseInt(__ENV.VUS, 10) || 10,
   duration: __ENV.DURATION || '30s',
   thresholds: {
     ws_connecting: ['p(95)<2000'],
@@ -96,7 +96,7 @@ export default function () {
     }, 50);
 
     // Run for the duration
-    sleep(parseInt(__ENV.DURATION?.replace('s', '')) || 30);
+    sleep(parseInt(__ENV.DURATION?.replace('s', ''), 10) || 30);
   });
 
   check(res, {

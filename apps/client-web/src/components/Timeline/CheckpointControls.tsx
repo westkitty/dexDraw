@@ -92,14 +92,10 @@ export const CheckpointControls: React.FC<CheckpointControlsProps> = ({
           }}
         >
           {checkpoints.map((cp) => (
-            <div
+            <button
+              type="button"
               key={cp.checkpointId}
-              role="button"
-              tabIndex={0}
               onClick={() => handleRestore(cp.checkpointId)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') handleRestore(cp.checkpointId);
-              }}
               style={{
                 padding: '6px 8px',
                 cursor: 'pointer',
@@ -118,7 +114,7 @@ export const CheckpointControls: React.FC<CheckpointControlsProps> = ({
               <div style={{ color: 'var(--text-muted)', fontSize: 11 }}>
                 Seq {cp.atServerSeq} &middot; {new Date(cp.createdAt).toLocaleTimeString()}
               </div>
-            </div>
+            </button>
           ))}
         </div>
       )}

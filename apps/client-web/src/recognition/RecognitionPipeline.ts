@@ -62,7 +62,7 @@ export class RecognitionPipeline {
     const id = uuid();
     return new Promise((resolve) => {
       this.pendingRequests.set(id, resolve);
-      this.worker!.postMessage({
+      this.worker?.postMessage({
         type: 'recognize',
         id,
         width: canvas.width,

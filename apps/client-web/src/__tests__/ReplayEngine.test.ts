@@ -64,7 +64,7 @@ describe('ReplayEngine', () => {
     expect(state3.size).toBe(2);
     const obj1 = state3.get('obj-1');
     expect(obj1).toBeDefined();
-    expect(obj1!.color).toBe('red');
+    expect(obj1?.color).toBe('red');
   });
 
   it('deletes objects correctly', () => {

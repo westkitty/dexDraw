@@ -44,7 +44,7 @@ function connect() {
   transport = 'websocket';
   updateStatus();
 
-  const wsUrl = currentUrl.replace(/^http/, 'ws') + `/ws/${currentRoomId}`;
+  const wsUrl = `${currentUrl.replace(/^http/, 'ws')}/ws/${currentRoomId}`;
 
   try {
     ws = new WebSocket(wsUrl);
@@ -61,7 +61,7 @@ function connect() {
     post({ type: 'connected' });
 
     // Send join message
-    ws!.send(
+    ws?.send(
       JSON.stringify({
         type: 'join',
         roomId: currentRoomId,
@@ -106,7 +106,7 @@ function connect() {
   };
 }
 
-function handleWsFailure(reason: string) {
+function handleWsFailure(_reason: string) {
   reconnectAttempts++;
 
   if (reconnectAttempts > WS_FAIL_THRESHOLD) {

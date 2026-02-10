@@ -61,8 +61,9 @@ export class CanvasRenderer {
   }
 
   private renderCommitted(): void {
-    const ctx = this.bgCtx!;
-    const canvas = this.bgCanvas!;
+    if (!this.bgCtx || !this.bgCanvas) return;
+    const ctx = this.bgCtx;
+    const canvas = this.bgCanvas;
     const width = canvas.width / (window.devicePixelRatio || 1);
     const height = canvas.height / (window.devicePixelRatio || 1);
 
@@ -110,8 +111,9 @@ export class CanvasRenderer {
   }
 
   private renderActiveStroke(): void {
-    const ctx = this.activeCtx!;
-    const canvas = this.activeCanvas!;
+    if (!this.activeCtx || !this.activeCanvas) return;
+    const ctx = this.activeCtx;
+    const canvas = this.activeCanvas;
     const width = canvas.width / (window.devicePixelRatio || 1);
     const height = canvas.height / (window.devicePixelRatio || 1);
 

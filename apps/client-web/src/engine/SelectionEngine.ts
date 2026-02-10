@@ -63,8 +63,13 @@ export function marqueeSelect(selectionRect: BBox): string[] {
       }
     } else {
       const data = obj.data as { x?: number; y?: number; width?: number; height?: number };
-      if (data.x !== undefined) {
-        objBBox = { x: data.x!, y: data.y!, width: data.width!, height: data.height! };
+      if (
+        data.x !== undefined &&
+        data.y !== undefined &&
+        data.width !== undefined &&
+        data.height !== undefined
+      ) {
+        objBBox = { x: data.x, y: data.y, width: data.width, height: data.height };
       }
     }
 

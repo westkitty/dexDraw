@@ -33,7 +33,7 @@ test.describe('Board basic functionality', () => {
     await page.goto('/');
     // Look for checkpoint text in the scrubber
     // Will show "0 checkpoints" by default
-    const scrubber = page.locator('text=checkpoint');
+    const _scrubber = page.locator('text=checkpoint');
     // May or may not be visible depending on boardId state
   });
 });
