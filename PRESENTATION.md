@@ -104,9 +104,33 @@ For the most reliable experience, we recommend running dexDraw in Docker. This e
 **"Tailscale won't connect"**
 > Ensure your `TS_AUTHKEY` is valid and reusable if you plan to restart often. Check logs with `docker-compose logs tailscale`.
 
+**"Tailscale won't connect"**
+> Ensure your `TS_AUTHKEY` is valid and reusable if you plan to restart often. Check logs with `docker-compose logs tailscale`.
+
 ---
 
-## 3. Architecture Deep Dive
+## 4. Native Tailscale Integration
+
+dexDraw is designed to be "Tailscale Native". If you run it locally without Docker, it will automatically bind to your Tailscale interface.
+
+### How to use:
+1.  Ensure Tailscale is installed and running on your Mac/PC.
+2.  Run `pnpm dev`.
+3.  On any other device in your Tailnet (e.g., iPad, Phone), navigate to:
+    `http://<YOUR-MACHINE-TAILSCALE-IP>:3000`
+    or
+    `http://<YOUR-MACHINE-NAME>:3000` (MagicDNS)
+
+### Sharing via Funnel
+If you need to share with someone *outside* your Tailnet:
+```bash
+tailscale funnel 3000
+```
+This will give you a public URL (e.g., `https://my-machine.tailnet.ts.net`) that routes securely to your local dexDraw instance.
+
+---
+
+## 5. Architecture Deep Dive
 
 ### Monorepo Structure
 The project is organized as a monorepo to share code between the client and server.

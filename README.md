@@ -87,6 +87,18 @@ Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
 -   **View Logs**: `docker-compose logs -f`
 -   **Stop**: `docker-compose down`
 
+## Native Usage (No Docker)
+
+If you prefer running directly on your machine (e.g., for development), dexDraw integrates seamlessly with Tailscale.
+
+1.  **Start the App**:
+    ```bash
+    pnpm dev
+    ```
+2.  **Access Remotely**:
+    Simply open your machine's **Tailscale IP**: `http://100.x.y.z:3000`.
+    *We automatically bind to all network interfaces, so no extra config is needed.*
+
 ### Troubleshooting
 
 -   **"Port already allocated"**: Modify `docker-compose.yml` to map to a different port (e.g., `'3001:80'`).
