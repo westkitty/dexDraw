@@ -14,17 +14,14 @@ export function exportPng(
   mode: 'viewport' | 'full',
   canvasEl: HTMLCanvasElement,
   objects: Map<string, CanvasObject>,
-  zoom: number,
+  _zoom: number,
   panX: number,
   panY: number,
 ): Promise<Blob | null> {
   return new Promise((resolve) => {
     if (mode === 'viewport') {
       // Export what's currently visible on the canvas
-      canvasEl.toBlob(
-        (blob) => resolve(blob),
-        'image/png',
-      );
+      canvasEl.toBlob((blob) => resolve(blob), 'image/png');
     } else {
       // Compute full board bounds from all objects
       const bounds = computeBoardBounds(objects);

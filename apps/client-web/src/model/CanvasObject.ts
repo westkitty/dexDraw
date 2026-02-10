@@ -1,4 +1,4 @@
-import type { Point2D, AffineMatrix, BBox } from '@dexdraw/shared-core';
+import type { AffineMatrix, BBox, Point2D } from '@dexdraw/shared-core';
 import { IDENTITY_MATRIX } from '@dexdraw/shared-core';
 
 export interface StrokeData {

@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  translate,
-  rotate,
-  multiply,
   applyTransform,
-  invert,
   IDENTITY_MATRIX,
+  invert,
+  multiply,
+  rotate,
+  translate,
 } from '../geometry/transform.js';
 
 describe('AffineMatrix', () => {

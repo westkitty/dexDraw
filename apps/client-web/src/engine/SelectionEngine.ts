@@ -1,5 +1,11 @@
-import { pointInPolygon, computeBBox, bboxIntersects, type Point2D, type BBox } from '@dexdraw/shared-core';
-import { useCanvasStore, type CanvasObject } from '../store/useCanvasStore';
+import {
+  type BBox,
+  bboxIntersects,
+  computeBBox,
+  type Point2D,
+  pointInPolygon,
+} from '@dexdraw/shared-core';
+import { type CanvasObject, useCanvasStore } from '../store/useCanvasStore';
 
 /**
  * Hit test a point against all canvas objects.
@@ -18,10 +24,19 @@ export function hitTest(point: Point2D): CanvasObject | null {
     } else {
       // For shapes/text, use bounding box
       const data = obj.data as { x?: number; y?: number; width?: number; height?: number };
-      if (data.x !== undefined && data.y !== undefined && data.width !== undefined && data.height !== undefined) {
+      if (
+        data.x !== undefined &&
+        data.y !== undefined &&
+        data.width !== undefined &&
+        data.height !== undefined
+      ) {
         const bbox: BBox = { x: data.x, y: data.y, width: data.width, height: data.height };
-        if (point.x >= bbox.x && point.x <= bbox.x + bbox.width &&
-            point.y >= bbox.y && point.y <= bbox.y + bbox.height) {
+        if (
+          point.x >= bbox.x &&
+          point.x <= bbox.x + bbox.width &&
+          point.y >= bbox.y &&
+          point.y <= bbox.y + bbox.height
+        ) {
           return obj;
         }
       }

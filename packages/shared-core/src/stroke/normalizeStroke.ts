@@ -1,8 +1,8 @@
-import type { RawPoint, Point2D } from './types.js';
-import { resample } from './resample.js';
-import { quantize } from './quantize.js';
-import { velocityPressureShim } from './velocityPressureShim.js';
 import { polygonFromStroke } from './polygonFromStroke.js';
+import { quantize } from './quantize.js';
+import { resample } from './resample.js';
+import type { Point2D, RawPoint } from './types.js';
+import { velocityPressureShim } from './velocityPressureShim.js';
 
 export interface NormalizeStrokeOptions {
   /** Minimum distance between resampled points. Default: 3 */
@@ -19,10 +19,7 @@ export interface NormalizeStrokeOptions {
  *
  * Produces deterministic output: same input always yields same polygon points.
  */
-export function normalizeStroke(
-  points: RawPoint[],
-  options?: NormalizeStrokeOptions,
-): Point2D[] {
+export function normalizeStroke(points: RawPoint[], options?: NormalizeStrokeOptions): Point2D[] {
   if (points.length < 2) return [];
 
   const resampled = resample(points, options?.minDistance ?? 3);

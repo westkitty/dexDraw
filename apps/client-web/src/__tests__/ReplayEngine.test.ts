@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { ReplayEngine } from '../collab/ReplayEngine';
 import type { ReplayOp } from '../store/useCheckpointStore';
 

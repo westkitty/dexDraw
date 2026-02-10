@@ -1,10 +1,10 @@
 import { and, asc, desc, eq, gt, lte } from 'drizzle-orm';
 import type { WebSocket } from 'ws';
+import { ClientRateLimiter, isPayloadSizeOk, LIMITS } from '../auth/limits.js';
+import { type BoardRole, canSendHybrid, canSendPresence, isOpAllowed } from '../auth/roles.js';
 import type { Database } from '../db/client.js';
 import { checkpoints, ops, snapshots } from '../db/schema/index.js';
 import type { Logger } from '../lib/logger.js';
-import { type BoardRole, isOpAllowed, canSendPresence, canSendHybrid } from '../auth/roles.js';
-import { ClientRateLimiter, isPayloadSizeOk, LIMITS } from '../auth/limits.js';
 
 interface ConnectedClient {
   clientId: string;
@@ -230,7 +230,11 @@ export class Room {
     }
   }
 
-  private async handleDurable(clientId: string, msg: Record<string, unknown>, role: BoardRole): Promise<void> {
+  private async handleDurable(
+    clientId: string,
+    msg: Record<string, unknown>,
+    role: BoardRole,
+  ): Promise<void> {
     const payload = msg.payload as Record<string, unknown>;
     if (!payload || payload.kind !== 'opBatch') return;
 

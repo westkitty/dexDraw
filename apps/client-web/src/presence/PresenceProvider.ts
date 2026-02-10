@@ -1,7 +1,7 @@
+import { encodeEnvelope, PROTOCOL_VERSION } from '@dexdraw/shared-protocol';
 import { v4 as uuid } from 'uuid';
-import { transportManager } from '../collab/TransportManager';
-import { PROTOCOL_VERSION, encodeEnvelope } from '@dexdraw/shared-protocol';
 import { create } from 'zustand';
+import { transportManager } from '../collab/TransportManager';
 
 export interface RemoteCursor {
   clientId: string;

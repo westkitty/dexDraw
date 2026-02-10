@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import type * as Y from 'yjs';
 
 interface TextEditorProps {
@@ -16,7 +16,16 @@ interface TextEditorProps {
  * In-place text editor overlay positioned on canvas.
  * Binds a textarea to a Y.Text for collaborative editing.
  */
-export function TextEditor({ yText, x, y, width, height, fontSize, color, onBlur }: TextEditorProps) {
+export function TextEditor({
+  yText,
+  x,
+  y,
+  width,
+  height,
+  fontSize,
+  color,
+  onBlur,
+}: TextEditorProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Sync Y.Text -> textarea

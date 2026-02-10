@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { isOpAllowed, canSendPresence, canSendHybrid } from '../auth/roles.js';
+import { describe, expect, it } from 'vitest';
+import { canSendHybrid, canSendPresence, isOpAllowed } from '../auth/roles.js';
 
 describe('Role enforcement', () => {
   describe('isOpAllowed', () => {

@@ -6,9 +6,9 @@
  *   k6 run tools/load/disconnect-chaos.js
  */
 
-import ws from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter } from 'k6/metrics';
+import ws from 'k6/ws';
 
 const WS_URL = __ENV.WS_URL || 'ws://localhost:4000/ws/chaos-board';
 
@@ -37,37 +37,43 @@ export default function () {
   const clientId = `chaos-${__VU}-${__ITER}`;
 
   // Connect
-  const res = ws.connect(WS_URL, {}, function (socket) {
-    socket.on('open', function () {
+  const res = ws.connect(WS_URL, {}, (socket) => {
+    socket.on('open', () => {
       reconnects.add(1);
-      socket.send(JSON.stringify({
-        type: 'join',
-        clientId,
-        displayName: `Chaos-${__VU}`,
-        lastSeenServerSeq: 0,
-      }));
+      socket.send(
+        JSON.stringify({
+          type: 'join',
+          clientId,
+          displayName: `Chaos-${__VU}`,
+          lastSeenServerSeq: 0,
+        }),
+      );
     });
 
     // Send a burst of ops
     for (let i = 0; i < 5; i++) {
-      socket.send(JSON.stringify({
-        v: 1,
-        type: 'durable',
-        roomId: 'chaos-board',
-        clientId,
-        msgId: `${clientId}-${i}`,
-        ts: Date.now(),
-        payload: {
-          kind: 'opBatch',
-          clientSeqStart: i,
-          ops: [{
-            type: 'createObject',
-            objectId: `${clientId}-obj-${i}`,
-            objectType: 'stroke',
-            data: {},
-          }],
-        },
-      }));
+      socket.send(
+        JSON.stringify({
+          v: 1,
+          type: 'durable',
+          roomId: 'chaos-board',
+          clientId,
+          msgId: `${clientId}-${i}`,
+          ts: Date.now(),
+          payload: {
+            kind: 'opBatch',
+            clientSeqStart: i,
+            ops: [
+              {
+                type: 'createObject',
+                objectId: `${clientId}-obj-${i}`,
+                objectType: 'stroke',
+                data: {},
+              },
+            ],
+          },
+        }),
+      );
     }
 
     // Disconnect after a random short delay (0-2s)
@@ -77,7 +83,7 @@ export default function () {
   });
 
   check(res, {
-    'connected': (r) => r && r.status === 101,
+    connected: (r) => r && r.status === 101,
   });
 
   // Brief pause before reconnecting

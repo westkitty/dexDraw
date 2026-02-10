@@ -1,12 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
-  DurableOp,
-  CreateObjectOp,
-  UpdateObjectOp,
-  DeleteObjectOp,
   CheckpointCreateOp,
   CheckpointRestoreOp,
   ConvertInkToTextOp,
+  CreateObjectOp,
+  DeleteObjectOp,
+  DurableOp,
+  UpdateObjectOp,
 } from '../schemas/op.js';
 
 describe('DurableOp schema validation', () => {

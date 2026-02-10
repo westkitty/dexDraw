@@ -1,8 +1,8 @@
 import { z } from 'zod';
 import { PROTOCOL_VERSION } from '../wire/constants.js';
+import { HybridPayload } from './hybrid.js';
 import { DurableOp } from './op.js';
 import { EphemeralPayload } from './presence.js';
-import { HybridPayload } from './hybrid.js';
 
 const OpBatchPayload = z.object({
   kind: z.literal('opBatch'),

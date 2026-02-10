@@ -1,4 +1,4 @@
-import { pgTable, uuid, integer, timestamp, serial, index, customType } from 'drizzle-orm/pg-core';
+import { customType, index, integer, pgTable, serial, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { boards } from './boards.js';
 
 const bytea = customType<{ data: Buffer }>({

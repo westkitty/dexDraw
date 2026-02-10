@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { clamp } from '../math/clamp.js';
-import { lerp } from '../math/lerp.js';
 import { distance } from '../math/distance.js';
+import { lerp } from '../math/lerp.js';
 
 describe('math utilities', () => {
   describe('clamp', () => {

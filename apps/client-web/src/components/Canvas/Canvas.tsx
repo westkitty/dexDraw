@@ -1,6 +1,6 @@
-import { useRef, useEffect, useCallback } from 'react';
-import { InputEngine } from '../../engine/InputEngine';
+import { useCallback, useEffect, useRef } from 'react';
 import { InkEngine } from '../../engine/InkEngine';
+import { InputEngine } from '../../engine/InputEngine';
 import { CanvasRenderer } from '../../renderer/CanvasRenderer';
 import { useAppStore } from '../../store/useAppStore';
 

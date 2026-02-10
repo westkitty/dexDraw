@@ -1,6 +1,6 @@
 import { clamp } from '../math/clamp.js';
 import { distance } from '../math/distance.js';
-import type { RawPoint, NormalizedPoint } from './types.js';
+import type { NormalizedPoint, RawPoint } from './types.js';
 
 /**
  * Determine if pressure data is meaningful.
@@ -12,8 +12,7 @@ function hasMeaningfulPressure(points: RawPoint[]): boolean {
   if (pressures.length < 2) return false;
 
   const mean = pressures.reduce((a, b) => a + b, 0) / pressures.length;
-  const variance =
-    pressures.reduce((sum, p) => sum + (p - mean) ** 2, 0) / pressures.length;
+  const variance = pressures.reduce((sum, p) => sum + (p - mean) ** 2, 0) / pressures.length;
 
   // Variance threshold: if all values are ~0.5 (constant), variance is near 0
   return variance > 0.001;

@@ -1,4 +1,4 @@
-import { pgTable, uuid, varchar, pgEnum } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
 import { boards } from './boards.js';
 
 export const boardRoleEnum = pgEnum('board_role', ['view', 'comment', 'edit']);

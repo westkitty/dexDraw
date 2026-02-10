@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { velocityPressureShim } from '../stroke/velocityPressureShim.js';
+import { describe, expect, it } from 'vitest';
 import type { RawPoint } from '../stroke/types.js';
+import { velocityPressureShim } from '../stroke/velocityPressureShim.js';
 
 describe('velocityPressureShim', () => {
   it('returns empty for empty input', () => {
@@ -37,9 +37,9 @@ describe('velocityPressureShim', () => {
   it('synthesizes pressure from velocity when pressure is missing', () => {
     const points: RawPoint[] = [
       { x: 0, y: 0, t: 0 },
-      { x: 5, y: 0, t: 16 },   // slow
-      { x: 10, y: 0, t: 32 },  // slow
-      { x: 50, y: 0, t: 48 },  // fast
+      { x: 5, y: 0, t: 16 }, // slow
+      { x: 10, y: 0, t: 32 }, // slow
+      { x: 50, y: 0, t: 48 }, // fast
       { x: 100, y: 0, t: 64 }, // fast
     ];
     const result = velocityPressureShim(points);

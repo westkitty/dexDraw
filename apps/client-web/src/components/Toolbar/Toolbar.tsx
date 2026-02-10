@@ -1,4 +1,4 @@
-import { useAppStore, type Tool } from '../../store/useAppStore';
+import { type Tool, useAppStore } from '../../store/useAppStore';
 import { ToolButton } from './ToolButton';
 
 const tools: { id: Tool; label: string }[] = [

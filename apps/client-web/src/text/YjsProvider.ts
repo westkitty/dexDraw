@@ -1,7 +1,7 @@
+import { encodeEnvelope, PROTOCOL_VERSION } from '@dexdraw/shared-protocol';
+import { v4 as uuid } from 'uuid';
 import * as Y from 'yjs';
 import { transportManager } from '../collab/TransportManager';
-import { v4 as uuid } from 'uuid';
-import { PROTOCOL_VERSION, encodeEnvelope } from '@dexdraw/shared-protocol';
 import { useBoardStore } from '../store/useBoardStore';
 
 /**

@@ -1,5 +1,5 @@
-import { pointInPolygon, computeBBox, type Point2D } from '@dexdraw/shared-core';
-import { useCanvasStore, type CanvasObject } from '../store/useCanvasStore';
+import { computeBBox, type Point2D, pointInPolygon } from '@dexdraw/shared-core';
+import { useCanvasStore } from '../store/useCanvasStore';
 
 /**
  * Lasso tool: freeform polygon selection region.

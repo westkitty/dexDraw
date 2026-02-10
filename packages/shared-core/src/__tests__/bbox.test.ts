@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { computeBBox, bboxIntersects, bboxUnion } from '../geometry/bbox.js';
+import { describe, expect, it } from 'vitest';
+import { bboxIntersects, bboxUnion, computeBBox } from '../geometry/bbox.js';
 
 describe('bbox', () => {
   it('computes bbox from points', () => {

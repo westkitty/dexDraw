@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { exportMarkdown } from '../export/exportMarkdown';
 import type { CanvasObject } from '../store/useCanvasStore';
 import type { CommentThread } from '../store/useCommentStore';
@@ -36,7 +36,13 @@ describe('exportMarkdown', () => {
       anchorObjectId: null,
       resolved: false,
       replies: [
-        { id: 'r1', threadId: 'thread-1', author: 'Alice', text: 'Good point', createdAt: Date.now() },
+        {
+          id: 'r1',
+          threadId: 'thread-1',
+          author: 'Alice',
+          text: 'Good point',
+          createdAt: Date.now(),
+        },
       ],
     });
     return map;

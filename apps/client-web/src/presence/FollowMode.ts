@@ -1,5 +1,5 @@
-import { usePresenceStore } from './PresenceProvider';
 import { useAppStore } from '../store/useAppStore';
+import { usePresenceStore } from './PresenceProvider';
 
 /**
  * Follow mode: smoothly animate viewport to match the presenter's viewport.

@@ -30,12 +30,7 @@ export function computeBBox(points: Point2D[]): BBox {
 
 /** Check if two bounding boxes intersect. */
 export function bboxIntersects(a: BBox, b: BBox): boolean {
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
 /** Compute the union of two bounding boxes. */

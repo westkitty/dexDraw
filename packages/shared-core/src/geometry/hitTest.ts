@@ -12,8 +12,7 @@ export function pointInPolygon(point: Point2D, polygon: Point2D[]): boolean {
     const yj = polygon[j].y;
 
     const intersect =
-      yi > point.y !== yj > point.y &&
-      point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+      yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
 
     if (intersect) inside = !inside;
   }

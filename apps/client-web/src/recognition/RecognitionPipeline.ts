@@ -22,10 +22,9 @@ export class RecognitionPipeline {
 
   private initWorker(): void {
     try {
-      this.worker = new Worker(
-        new URL('../workers/recognition.worker.ts', import.meta.url),
-        { type: 'module' },
-      );
+      this.worker = new Worker(new URL('../workers/recognition.worker.ts', import.meta.url), {
+        type: 'module',
+      });
 
       this.worker.onmessage = (event) => {
         const { id, candidates, used } = event.data;
@@ -33,7 +32,10 @@ export class RecognitionPipeline {
         if (resolve) {
           this.pendingRequests.delete(id);
 
-          const maxConfidence = Math.max(...candidates.map((c: { confidence: number }) => c.confidence), 0);
+          const maxConfidence = Math.max(
+            ...candidates.map((c: { confidence: number }) => c.confidence),
+            0,
+          );
 
           if (maxConfidence >= CONFIDENCE_THRESHOLD && used !== 'stub') {
             resolve({ candidates, source: 'local' });
@@ -83,9 +85,7 @@ export class RecognitionPipeline {
    */
   async recognizeServer(canvas: HTMLCanvasElement): Promise<RecognitionResult> {
     try {
-      const blob = await new Promise<Blob | null>((resolve) =>
-        canvas.toBlob(resolve, 'image/png'),
-      );
+      const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/png'));
       if (!blob) return { candidates: [], source: 'server' };
 
       const formData = new FormData();
@@ -116,10 +116,7 @@ export class RecognitionPipeline {
   async recognize(canvas: HTMLCanvasElement): Promise<RecognitionResult> {
     const localResult = await this.recognizeLocal(canvas);
 
-    const maxLocalConfidence = Math.max(
-      ...localResult.candidates.map((c) => c.confidence),
-      0,
-    );
+    const maxLocalConfidence = Math.max(...localResult.candidates.map((c) => c.confidence), 0);
 
     if (maxLocalConfidence >= CONFIDENCE_THRESHOLD) {
       return localResult;

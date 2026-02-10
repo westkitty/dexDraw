@@ -1,6 +1,13 @@
 /** Messages from main thread -> worker */
 export type WorkerInbound =
-  | { type: 'connect'; url: string; roomId: string; clientId: string; displayName: string; lastSeenServerSeq: number }
+  | {
+      type: 'connect';
+      url: string;
+      roomId: string;
+      clientId: string;
+      displayName: string;
+      lastSeenServerSeq: number;
+    }
   | { type: 'send'; data: string }
   | { type: 'disconnect' };
 
@@ -12,5 +19,10 @@ export type WorkerOutbound =
   | { type: 'status'; state: ConnectionState; transport: TransportType; rtt: number }
   | { type: 'error'; message: string };
 
-export type ConnectionState = 'disconnected' | 'connecting' | 'connected' | 'reconnecting' | 'fallback_polling';
+export type ConnectionState =
+  | 'disconnected'
+  | 'connecting'
+  | 'connected'
+  | 'reconnecting'
+  | 'fallback_polling';
 export type TransportType = 'websocket' | 'longpoll' | 'none';

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from 'fastify';
-import { OcrService } from './OcrService.js';
+import type { OcrService } from './OcrService.js';
 
 export function createRecognitionRoutes(ocrService: OcrService) {
   return async function recognitionRoutes(app: FastifyInstance) {

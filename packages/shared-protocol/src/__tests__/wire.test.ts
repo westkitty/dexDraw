@@ -1,8 +1,8 @@
-import { describe, it, expect } from 'vitest';
 import { v4 as uuid } from 'uuid';
-import { encodeEnvelope } from '../wire/encode.js';
-import { decodeC2S, decodeS2C } from '../wire/decode.js';
+import { describe, expect, it } from 'vitest';
 import { PROTOCOL_VERSION } from '../wire/constants.js';
+import { decodeC2S, decodeS2C } from '../wire/decode.js';
+import { encodeEnvelope } from '../wire/encode.js';
 
 describe('Wire encode/decode roundtrip', () => {
   it('roundtrips a c2s durable envelope', () => {

@@ -1,6 +1,6 @@
 import * as Y from 'yjs';
-import type { YjsPersistence } from './YjsPersistence.js';
 import type { Logger } from '../lib/logger.js';
+import type { YjsPersistence } from './YjsPersistence.js';
 
 /**
  * Manages Yjs documents per text object within a board room.
@@ -39,7 +39,11 @@ export class YjsRoomHandler {
   }
 
   /** Apply a remote update from a client and persist it. */
-  async applyUpdate(textObjectId: string, base64Update: string, serverSeqRef: number): Promise<void> {
+  async applyUpdate(
+    textObjectId: string,
+    base64Update: string,
+    serverSeqRef: number,
+  ): Promise<void> {
     const doc = await this.getDoc(textObjectId);
 
     const binaryStr = Buffer.from(base64Update, 'base64');

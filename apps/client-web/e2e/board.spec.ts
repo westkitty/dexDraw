@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 test.describe('Board basic functionality', () => {
   test('loads the application', async ({ page }) => {

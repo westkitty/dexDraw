@@ -1,6 +1,6 @@
+import { and, eq } from 'drizzle-orm';
 import type { Database } from '../db/client.js';
 import { yjsUpdates } from '../db/schema/index.js';
-import { eq, and } from 'drizzle-orm';
 import type { Logger } from '../lib/logger.js';
 
 export class YjsPersistence {
@@ -29,10 +29,7 @@ export class YjsPersistence {
   }
 
   /** Load all Yjs updates for a text object up to a given serverSeq. */
-  async loadUpdates(
-    boardId: string,
-    textObjectId: string,
-  ): Promise<Buffer[]> {
+  async loadUpdates(boardId: string, textObjectId: string): Promise<Buffer[]> {
     const rows = await this.db
       .select({ update: yjsUpdates.update })
       .from(yjsUpdates)

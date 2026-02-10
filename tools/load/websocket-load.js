@@ -10,9 +10,9 @@
  *   DURATION - Test duration (default: 30s)
  */
 
-import ws from 'k6/ws';
 import { check, sleep } from 'k6';
 import { Counter, Trend } from 'k6/metrics';
+import ws from 'k6/ws';
 
 const WS_URL = __ENV.WS_URL || 'ws://localhost:4000/ws/test-board';
 
@@ -32,18 +32,20 @@ export default function () {
   const clientId = `load-test-${__VU}-${Date.now()}`;
   let clientSeq = 0;
 
-  const res = ws.connect(WS_URL, {}, function (socket) {
+  const res = ws.connect(WS_URL, {}, (socket) => {
     // Send join message
-    socket.on('open', function () {
-      socket.send(JSON.stringify({
-        type: 'join',
-        clientId,
-        displayName: `LoadUser-${__VU}`,
-        lastSeenServerSeq: 0,
-      }));
+    socket.on('open', () => {
+      socket.send(
+        JSON.stringify({
+          type: 'join',
+          clientId,
+          displayName: `LoadUser-${__VU}`,
+          lastSeenServerSeq: 0,
+        }),
+      );
     });
 
-    socket.on('message', function (data) {
+    socket.on('message', (data) => {
       const msg = JSON.parse(data);
       if (msg.type === 'opBroadcast') {
         opsReceived.add(1);
@@ -51,40 +53,46 @@ export default function () {
     });
 
     // Send ops at ~10 ops/sec
-    socket.setInterval(function () {
+    socket.setInterval(() => {
       const opStart = Date.now();
-      socket.send(JSON.stringify({
-        v: 1,
-        type: 'durable',
-        roomId: 'test-board',
-        clientId,
-        msgId: `${clientId}-${clientSeq}`,
-        ts: Date.now(),
-        payload: {
-          kind: 'opBatch',
-          clientSeqStart: clientSeq,
-          ops: [{
-            type: 'createObject',
-            objectId: `${clientId}-obj-${clientSeq}`,
-            objectType: 'stroke',
-            data: { points: [[100 + Math.random() * 500, 100 + Math.random() * 500]] },
-          }],
-        },
-      }));
+      socket.send(
+        JSON.stringify({
+          v: 1,
+          type: 'durable',
+          roomId: 'test-board',
+          clientId,
+          msgId: `${clientId}-${clientSeq}`,
+          ts: Date.now(),
+          payload: {
+            kind: 'opBatch',
+            clientSeqStart: clientSeq,
+            ops: [
+              {
+                type: 'createObject',
+                objectId: `${clientId}-obj-${clientSeq}`,
+                objectType: 'stroke',
+                data: { points: [[100 + Math.random() * 500, 100 + Math.random() * 500]] },
+              },
+            ],
+          },
+        }),
+      );
       opLatency.add(Date.now() - opStart);
       clientSeq++;
     }, 100);
 
     // Send cursor updates at ~20Hz
-    socket.setInterval(function () {
-      socket.send(JSON.stringify({
-        type: 'ephemeral',
-        payload: {
-          kind: 'cursor',
-          x: Math.random() * 1000,
-          y: Math.random() * 800,
-        },
-      }));
+    socket.setInterval(() => {
+      socket.send(
+        JSON.stringify({
+          type: 'ephemeral',
+          payload: {
+            kind: 'cursor',
+            x: Math.random() * 1000,
+            y: Math.random() * 800,
+          },
+        }),
+      );
     }, 50);
 
     // Run for the duration

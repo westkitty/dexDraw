@@ -1,4 +1,13 @@
-import { pgTable, uuid, integer, varchar, jsonb, timestamp, uniqueIndex, serial } from 'drizzle-orm/pg-core';
+import {
+  integer,
+  jsonb,
+  pgTable,
+  serial,
+  timestamp,
+  uniqueIndex,
+  uuid,
+  varchar,
+} from 'drizzle-orm/pg-core';
 import { boards } from './boards.js';
 
 export const ops = pgTable(

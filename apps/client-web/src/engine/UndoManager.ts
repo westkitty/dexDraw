@@ -62,7 +62,10 @@ export const useUndoStore = create<UndoState>()((set, get) => ({
 /**
  * Create inverse ops for common operations.
  */
-export function createInverseOp(op: DurableOp, previousState?: Record<string, unknown>): DurableOp | null {
+export function createInverseOp(
+  op: DurableOp,
+  previousState?: Record<string, unknown>,
+): DurableOp | null {
   switch (op.type) {
     case 'createObject':
       return { type: 'deleteObject', objectId: op.objectId };

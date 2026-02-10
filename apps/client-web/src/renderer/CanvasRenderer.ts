@@ -1,8 +1,8 @@
 import type { Point2D } from '@dexdraw/shared-core';
 import { normalizeStroke } from '@dexdraw/shared-core';
-import { useCanvasStore, type CanvasObject } from '../store/useCanvasStore';
-import { useAppStore } from '../store/useAppStore';
 import type { InkEngine } from '../engine/InkEngine';
+import { useAppStore } from '../store/useAppStore';
+import { type CanvasObject, useCanvasStore } from '../store/useCanvasStore';
 
 /**
  * Imperative canvas renderer using requestAnimationFrame.
@@ -17,11 +17,7 @@ export class CanvasRenderer {
   private inkEngine: InkEngine | null = null;
   private needsRedraw = true;
 
-  attach(
-    bgCanvas: HTMLCanvasElement,
-    activeCanvas: HTMLCanvasElement,
-    inkEngine: InkEngine,
-  ): void {
+  attach(bgCanvas: HTMLCanvasElement, activeCanvas: HTMLCanvasElement, inkEngine: InkEngine): void {
     this.bgCanvas = bgCanvas;
     this.activeCanvas = activeCanvas;
     this.bgCtx = bgCanvas.getContext('2d');

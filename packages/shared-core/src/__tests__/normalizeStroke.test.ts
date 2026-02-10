@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { normalizeStroke } from '../stroke/normalizeStroke.js';
 import type { RawPoint } from '../stroke/types.js';
 

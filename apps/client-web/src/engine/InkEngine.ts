@@ -1,10 +1,15 @@
+import { normalizeStroke, type Point2D, type RawPoint } from '@dexdraw/shared-core';
 import { v4 as uuid } from 'uuid';
-import { normalizeStroke, type RawPoint, type Point2D } from '@dexdraw/shared-core';
-import type { InputEventHandler } from './InputEngine';
-import { useCanvasStore } from '../store/useCanvasStore';
 import { useAppStore } from '../store/useAppStore';
+import { useCanvasStore } from '../store/useCanvasStore';
+import type { InputEventHandler } from './InputEngine';
 
-export type StrokeCommitHandler = (objectId: string, polygonPoints: Point2D[], color: string, size: number) => void;
+export type StrokeCommitHandler = (
+  objectId: string,
+  polygonPoints: Point2D[],
+  color: string,
+  size: number,
+) => void;
 
 /**
  * Manages the active stroke during drawing.

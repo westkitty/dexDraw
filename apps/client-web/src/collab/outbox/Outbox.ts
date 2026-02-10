@@ -1,8 +1,8 @@
+import type { DurableOp } from '@dexdraw/shared-protocol';
+import { encodeEnvelope, PROTOCOL_VERSION } from '@dexdraw/shared-protocol';
 import { v4 as uuid } from 'uuid';
 import { transportManager } from '../TransportManager';
-import { putOp, removeOp, getAllOps } from './OutboxDB';
-import { PROTOCOL_VERSION, encodeEnvelope } from '@dexdraw/shared-protocol';
-import type { DurableOp } from '@dexdraw/shared-protocol';
+import { getAllOps, putOp, removeOp } from './OutboxDB';
 
 export class Outbox {
   private clientSeqCounter = 0;

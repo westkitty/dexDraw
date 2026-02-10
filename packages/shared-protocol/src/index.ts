@@ -1,39 +1,35 @@
 // Schemas
+
+export { BoardRole, JoinRequest, JoinResponse } from './schemas/auth.js';
+export type { OpBatchPayload } from './schemas/envelope.js';
 export {
-  Envelope,
   C2SEnvelope,
+  Envelope,
   S2CEnvelope,
   validateEnvelopeWithDirection,
 } from './schemas/envelope.js';
-export type { OpBatchPayload } from './schemas/envelope.js';
-
+export { HybridPayload, TextCRDTPayload } from './schemas/hybrid.js';
 export {
-  DurableOp,
-  CreateObjectOp,
-  UpdateObjectOp,
-  DeleteObjectOp,
-  ConvertInkToTextOp,
-  UndoOp,
-  RedoOp,
   CheckpointCreateOp,
   CheckpointRestoreOp,
+  ConvertInkToTextOp,
+  CreateObjectOp,
+  DeleteObjectOp,
+  DurableOp,
+  RedoOp,
+  UndoOp,
+  UpdateObjectOp,
 } from './schemas/op.js';
 
-export { StyleSchema } from './schemas/style.js';
+export { CursorPayload, EphemeralPayload, LaserPayload } from './schemas/presence.js';
+export { BoardObjectSnapshot, BoardSnapshot } from './schemas/snapshot.js';
 export type { Style } from './schemas/style.js';
-
-export { CursorPayload, LaserPayload, EphemeralPayload } from './schemas/presence.js';
-export { TextCRDTPayload, HybridPayload } from './schemas/hybrid.js';
-
-export { JoinRequest, JoinResponse, BoardRole } from './schemas/auth.js';
-export { BoardSnapshot, BoardObjectSnapshot } from './schemas/snapshot.js';
-
-// Wire
-export { PROTOCOL_VERSION, EnvelopeType, OpType, ObjectType } from './wire/constants.js';
-export { encodeEnvelope } from './wire/encode.js';
-export { decodeC2S, decodeS2C } from './wire/decode.js';
-export type { DecodeResult } from './wire/decode.js';
-
-// Templates
-export { TEMPLATES, getTemplateById } from './templates/index.js';
+export { StyleSchema } from './schemas/style.js';
 export type { BoardTemplate, TemplateObject } from './templates/index.js';
+// Templates
+export { getTemplateById, TEMPLATES } from './templates/index.js';
+// Wire
+export { EnvelopeType, ObjectType, OpType, PROTOCOL_VERSION } from './wire/constants.js';
+export type { DecodeResult } from './wire/decode.js';
+export { decodeC2S, decodeS2C } from './wire/decode.js';
+export { encodeEnvelope } from './wire/encode.js';

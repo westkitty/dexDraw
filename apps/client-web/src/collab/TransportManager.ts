@@ -1,5 +1,5 @@
-import type { WorkerInbound, WorkerOutbound } from '../workers/WorkerProtocol';
 import { useBoardStore } from '../store/useBoardStore';
+import type { WorkerInbound, WorkerOutbound } from '../workers/WorkerProtocol';
 
 type MessageHandler = (data: string) => void;
 
@@ -16,10 +16,9 @@ export class TransportManager {
   }): void {
     this.disconnect();
 
-    this.worker = new Worker(
-      new URL('../workers/connection.worker.ts', import.meta.url),
-      { type: 'module' },
-    );
+    this.worker = new Worker(new URL('../workers/connection.worker.ts', import.meta.url), {
+      type: 'module',
+    });
 
     this.worker.onmessage = (event: MessageEvent<WorkerOutbound>) => {
       this.handleWorkerMessage(event.data);
@@ -74,7 +73,13 @@ export class TransportManager {
         } else if (msg.state === 'connecting') {
           store.setConnectionStatus('connecting');
         }
-        store.setTransportMode(msg.transport === 'longpoll' ? 'longpoll' : msg.transport === 'websocket' ? 'websocket' : 'none');
+        store.setTransportMode(
+          msg.transport === 'longpoll'
+            ? 'longpoll'
+            : msg.transport === 'websocket'
+              ? 'websocket'
+              : 'none',
+        );
         store.setPing(msg.rtt);
         break;
 

@@ -17,9 +17,7 @@ export class OcrService {
     // Placeholder: return empty candidates
     // Will be replaced with actual Tesseract.js integration
     return {
-      candidates: [
-        { text: '[OCR not configured]', confidence: 0.1 },
-      ],
+      candidates: [{ text: '[OCR not configured]', confidence: 0.1 }],
     };
   }
 }

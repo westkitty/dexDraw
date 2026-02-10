@@ -16,11 +16,7 @@ const COMMENT_OBJECT_TYPES = new Set(['comment']);
  * Check if a role is allowed to perform a given op.
  * Returns true if allowed, false if denied.
  */
-export function isOpAllowed(
-  role: BoardRole,
-  opType: string,
-  objectType?: string,
-): boolean {
+export function isOpAllowed(role: BoardRole, opType: string, objectType?: string): boolean {
   // Edit role can do everything
   if (role === 'edit') return true;
 

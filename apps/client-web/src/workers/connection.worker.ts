@@ -1,4 +1,9 @@
-import type { WorkerInbound, WorkerOutbound, ConnectionState, TransportType } from './WorkerProtocol';
+import type {
+  ConnectionState,
+  TransportType,
+  WorkerInbound,
+  WorkerOutbound,
+} from './WorkerProtocol';
 
 let ws: WebSocket | null = null;
 let state: ConnectionState = 'disconnected';
@@ -56,13 +61,15 @@ function connect() {
     post({ type: 'connected' });
 
     // Send join message
-    ws!.send(JSON.stringify({
-      type: 'join',
-      roomId: currentRoomId,
-      clientId: currentClientId,
-      displayName: currentDisplayName,
-      lastSeenServerSeq: currentLastSeenServerSeq,
-    }));
+    ws!.send(
+      JSON.stringify({
+        type: 'join',
+        roomId: currentRoomId,
+        clientId: currentClientId,
+        displayName: currentDisplayName,
+        lastSeenServerSeq: currentLastSeenServerSeq,
+      }),
+    );
 
     startPingLoop();
   };

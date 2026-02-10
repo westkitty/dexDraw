@@ -37,20 +37,22 @@ export async function exportPdf(
     const imgHeight = (canvasEl.height / canvasEl.width) * imgWidth;
     const maxImgHeight = pageHeight - 50;
 
-    doc.addImage(
-      imgData,
-      'PNG',
-      14,
-      35,
-      imgWidth,
-      Math.min(imgHeight, maxImgHeight),
-    );
+    doc.addImage(imgData, 'PNG', 14, 35, imgWidth, Math.min(imgHeight, maxImgHeight));
   } catch {
     doc.setFontSize(12);
     doc.text('(Board image could not be captured)', 14, 50);
   }
 
   // Extract text objects
+  addTextContent(doc, objects, pageWidth, pageHeight);
+}
+
+function addTextContent(
+  doc: jsPDF,
+  objects: Map<string, CanvasObject>,
+  pageWidth: number,
+  pageHeight: number,
+) {
   const textObjects = getTextObjects(objects);
   if (textObjects.length > 0) {
     doc.addPage();

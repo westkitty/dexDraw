@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeAll } from 'vitest';
-import { initTokenSecret, createBoardToken, verifyBoardToken } from '../auth/token.js';
+import { beforeAll, describe, expect, it } from 'vitest';
+import { createBoardToken, initTokenSecret, verifyBoardToken } from '../auth/token.js';
 
 describe('Board tokens (JWT)', () => {
   beforeAll(() => {

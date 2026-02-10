@@ -1,4 +1,4 @@
-import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
+import { type JWTPayload, jwtVerify, SignJWT } from 'jose';
 
 export interface BoardTokenPayload extends JWTPayload {
   boardId: string;

@@ -1,12 +1,10 @@
 import {
-  C2SEnvelope,
-  S2CEnvelope,
+  type C2SEnvelope,
+  type S2CEnvelope,
   validateEnvelopeWithDirection,
 } from '../schemas/envelope.js';
 
-export type DecodeResult<T> =
-  | { ok: true; envelope: T }
-  | { ok: false; error: string };
+export type DecodeResult<T> = { ok: true; envelope: T } | { ok: false; error: string };
 
 /** Decode and validate a JSON string as a client-to-server envelope. */
 export function decodeC2S(raw: string): DecodeResult<C2SEnvelope> {
