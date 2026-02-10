@@ -52,14 +52,38 @@ To build for production:
 pnpm build
 ```
 
-## Docker
+## Docker (Recommended)
 
-You can run the entire stack (Client, Server, Postgres) using Docker Compose:
+For the most reliable experience, we recommend running dexDraw in Docker. This ensures all dependencies (Node, Postgres, Nginx) are configured exactly as intended.
+
+### 1. Prerequisites
+-   **Docker Desktop**: Download from [docker.com](https://www.docker.com/products/docker-desktop/)
+-   **RAM**: Allocate at least 4GB of RAM to Docker for building.
+
+### 2. Quick Start
+Run the entire stack (Client, Server, Postgres) with a single command:
 
 ```bash
 docker-compose up --build
 ```
-*For extremely detailed setup instructions, troubleshooting, and container management, please read the [PRESENTATION.md](PRESENTATION.md#3-docker-deployment-recommended) guide.*
+
+*Note: The first build may take 3-5 minutes as it installs dependencies.*
+
+### 3. Access the Application
+Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
+-   **Frontend**: [http://localhost:3000](http://localhost:3000)
+-   **API**: [http://localhost:4000](http://localhost:4000)
+
+### 4. Management Commands
+
+-   **Run in Background**: `docker-compose up -d`
+-   **View Logs**: `docker-compose logs -f`
+-   **Stop**: `docker-compose down`
+
+### Troubleshooting
+
+-   **"Port already allocated"**: Modify `docker-compose.yml` to map to a different port (e.g., `'3001:80'`).
+-   **"Connection refused to postgres"**: Simply restart the containers: `docker-compose restart server`.
 
 ## Architecture
 
