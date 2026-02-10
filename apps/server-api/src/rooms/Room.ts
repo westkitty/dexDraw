@@ -3,12 +3,15 @@ import type { WebSocket } from 'ws';
 import type { Database } from '../db/client.js';
 import { checkpoints, ops, snapshots } from '../db/schema/index.js';
 import type { Logger } from '../lib/logger.js';
+import { type BoardRole, isOpAllowed, canSendPresence, canSendHybrid } from '../auth/roles.js';
+import { ClientRateLimiter, isPayloadSizeOk, LIMITS } from '../auth/limits.js';
 
 interface ConnectedClient {
   clientId: string;
   socket: WebSocket;
   displayName: string;
   color: string;
+  role: BoardRole;
   lastCursorUpdate: number;
 }
 
@@ -47,6 +50,7 @@ export class Room {
   private destroyTimer: ReturnType<typeof setTimeout> | null = null;
   private colorIdx = 0;
   private snapshotPending = false;
+  private rateLimiter = new ClientRateLimiter();
 
   constructor(
     boardId: string,
@@ -113,6 +117,7 @@ export class Room {
     socket: WebSocket,
     displayName: string,
     lastSeenServerSeq: number,
+    role: BoardRole = 'edit',
   ): void {
     if (this.destroyTimer) {
       clearTimeout(this.destroyTimer);
@@ -127,6 +132,7 @@ export class Room {
       socket,
       displayName,
       color,
+      role,
       lastCursorUpdate: 0,
     };
 
@@ -137,7 +143,7 @@ export class Room {
       type: 'joinAck',
       roomId: this.boardId,
       clientId,
-      role: 'edit', // P18 will add real role checking
+      role,
       currentServerSeq: this.currentSeq,
       users: Array.from(this.clients.values()).map((c) => ({
         clientId: c.clientId,
@@ -188,6 +194,12 @@ export class Room {
   }
 
   async handleMessage(clientId: string, raw: string): Promise<void> {
+    // Payload size check
+    if (raw.length > LIMITS.MAX_WS_MESSAGE_BYTES) {
+      this.log.warn({ clientId, size: raw.length }, 'Message exceeds size limit');
+      return;
+    }
+
     let parsed: unknown;
     try {
       parsed = JSON.parse(raw);
@@ -197,30 +209,62 @@ export class Room {
     }
 
     const msg = parsed as Record<string, unknown>;
+    const client = this.clients.get(clientId);
+    if (!client) return;
 
     if (msg.type === 'durable') {
-      await this.handleDurable(clientId, msg);
+      // Rate limiting
+      if (!this.rateLimiter.isAllowed(clientId)) {
+        this.log.warn({ clientId }, 'Rate limit exceeded');
+        return;
+      }
+      await this.handleDurable(clientId, msg, client.role);
     } else if (msg.type === 'ephemeral') {
+      if (!canSendPresence(client.role)) return;
       this.handleEphemeral(clientId, msg);
     } else if (msg.type === 'hybrid') {
+      if (!canSendHybrid(client.role)) return;
       this.handleHybrid(clientId, msg);
     } else if (msg.type === 'ping') {
-      const client = this.clients.get(clientId);
-      if (client) {
-        this.sendTo(client.socket, { type: 'pong', ts: Date.now() });
-      }
+      this.sendTo(client.socket, { type: 'pong', ts: Date.now() });
     }
   }
 
-  private async handleDurable(clientId: string, msg: Record<string, unknown>): Promise<void> {
+  private async handleDurable(clientId: string, msg: Record<string, unknown>, role: BoardRole): Promise<void> {
     const payload = msg.payload as Record<string, unknown>;
     if (!payload || payload.kind !== 'opBatch') return;
 
     const batchOps = (payload.ops as Array<Record<string, unknown>>) ?? [];
     const clientSeqStart = (payload.clientSeqStart as number) ?? 0;
 
+    // Batch size limit
+    if (batchOps.length > LIMITS.MAX_BATCH_SIZE) {
+      this.log.warn({ clientId, count: batchOps.length }, 'Batch exceeds max size');
+      return;
+    }
+
     for (let i = 0; i < batchOps.length; i++) {
       const op = batchOps[i];
+
+      // Role enforcement
+      const opType = (op.type as string) ?? 'unknown';
+      const objectType = (op.objectType as string) ?? undefined;
+      if (!isOpAllowed(role, opType, objectType)) {
+        this.log.warn({ clientId, opType, role }, 'Op denied by role');
+        continue;
+      }
+
+      // Object count limit for createObject
+      if (opType === 'createObject' && this.objects.size >= LIMITS.MAX_OBJECTS_PER_BOARD) {
+        this.log.warn({ clientId, objectCount: this.objects.size }, 'Object limit reached');
+        continue;
+      }
+
+      // Payload size check per op
+      if (!isPayloadSizeOk(op)) {
+        this.log.warn({ clientId }, 'Op payload too large');
+        continue;
+      }
       const clientSeq = clientSeqStart + i;
       const dedupeKey = `${clientId}:${clientSeq}`;
 
@@ -232,7 +276,6 @@ export class Room {
 
       // Assign serverSeq
       const serverSeq = ++this.currentSeq;
-      const opType = (op.type as string) ?? 'unknown';
 
       // Persist
       try {

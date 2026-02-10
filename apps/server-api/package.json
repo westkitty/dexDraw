@@ -15,12 +15,15 @@
     "@dexdraw/shared-core": "workspace:*",
     "@dexdraw/shared-protocol": "workspace:*",
     "@fastify/cors": "^11.2.0",
+    "@fastify/helmet": "^13.0.2",
     "@fastify/rate-limit": "^10.3.0",
     "@fastify/websocket": "^11.2.0",
     "drizzle-orm": "^0.45.1",
     "fastify": "^5.7.4",
+    "jose": "^6.1.3",
     "postgres": "^3.4.8",
     "uuid": "^10.0.0",
+    "yjs": "^13.6.29",
     "zod": "^3.25.76"
   },
   "devDependencies": {
