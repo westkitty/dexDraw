@@ -59,6 +59,7 @@ You can run the entire stack (Client, Server, Postgres) using Docker Compose:
 ```bash
 docker-compose up --build
 ```
+*For extremely detailed setup instructions, troubleshooting, and container management, please read the [PRESENTATION.md](PRESENTATION.md#3-docker-deployment-recommended) guide.*
 
 ## Architecture
 

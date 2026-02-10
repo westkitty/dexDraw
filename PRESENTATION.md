@@ -44,6 +44,62 @@ Ensure you have the following installed on your machine:
     -   **Client:** `http://localhost:5173` (Vite)
     -   **Server:** `http://localhost:3000` (Fastify)
 
+    -   **Server:** `http://localhost:3000` (Fastify)
+
+---
+
+## 3. Docker Deployment (Recommended)
+
+For the most reliable experience, we recommend running dexDraw in Docker. This ensures all dependencies (Node, Postgres, Nginx) are configured exactly as intended.
+
+### 3.1 Prerequisites
+-   **Docker Desktop**: Download from [docker.com](https://www.docker.com/products/docker-desktop/)
+-   **Computed RAM**: Allocate at least 4GB of RAM to Docker for building.
+
+### 3.2 Step-by-Step Guide
+
+1.  **Clone the Repo (if you haven't already)**
+    ```bash
+    git clone https://github.com/westkitty/dexDraw.git
+    cd dexDraw
+    ```
+
+2.  **Build and Run**
+    Run the following command in your terminal. This will download the base images, build the application code, and start the services.
+    ```bash
+    docker-compose up --build
+    ```
+    *Note: The first build may take 3-5 minutes as it installs dependencies.*
+
+3.  **Access the Application**
+    Once the logs show "Server listening at http://0.0.0.0:4000", open your browser:
+    -   **Frontend**: [http://localhost:3000](http://localhost:3000)
+    -   **API**: [http://localhost:4000](http://localhost:4000)
+
+### 3.3 Managing the Containers
+
+-   **Stop the App**: Press `Ctrl+C` in the terminal.
+-   **Run in Background**: Use the detached mode flag `-d`:
+    ```bash
+    docker-compose up -d
+    ```
+-   **View Logs (Detached)**:
+    ```bash
+    docker-compose logs -f
+    ```
+-   **Stop and Remove**:
+    ```bash
+    docker-compose down
+    ```
+
+### 3.4 Troubleshooting
+
+**"Bind for 0.0.0.0:3000 failed: port is already allocated"**
+> This means another program is using port 3000. Stop other apps or modify `docker-compose.yml` to map to a different port (e.g., `'3001:80'`).
+
+**"Connection refused to postgres"**
+> The server might start before the database is ready. The `depends_on` condition in our compose file handles this, but if it fails, simply restart the containers: `docker-compose restart server`.
+
 ---
 
 ## 3. Architecture Deep Dive
