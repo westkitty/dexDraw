@@ -60,4 +60,28 @@ export class RoomManager {
   get roomCount(): number {
     return this.rooms.size;
   }
+
+  get totalClientCount(): number {
+    let count = 0;
+    for (const room of this.rooms.values()) {
+      count += room.clientCount;
+    }
+    return count;
+  }
+
+  getMetrics(): {
+    rooms: number;
+    clients: number;
+    roomDetails: Array<{ boardId: string; clients: number }>;
+  } {
+    const roomDetails: Array<{ boardId: string; clients: number }> = [];
+    for (const [boardId, room] of this.rooms.entries()) {
+      roomDetails.push({ boardId, clients: room.clientCount });
+    }
+    return {
+      rooms: this.rooms.size,
+      clients: this.totalClientCount,
+      roomDetails,
+    };
+  }
 }

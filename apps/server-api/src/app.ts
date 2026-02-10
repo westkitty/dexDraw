@@ -1,17 +1,17 @@
-import Fastify from 'fastify';
 import helmet from '@fastify/helmet';
+import Fastify from 'fastify';
+import { initTokenSecret } from './auth/token.js';
 import { loadEnv } from './config/env.js';
+import { getDb } from './db/client.js';
 import { registerCors } from './plugins/cors.js';
 import { registerRateLimit } from './plugins/rateLimit.js';
 import { registerWebSocket } from './plugins/websocket.js';
-import { healthRoutes } from './routes/health.js';
-import { createWsRoutes } from './routes/ws.js';
-import { createCheckpointRoutes } from './routes/checkpoints.js';
-import { createBoardRoutes } from './routes/boards.js';
-import { authRoutes } from './routes/auth.js';
-import { getDb } from './db/client.js';
 import { RoomManager } from './rooms/RoomManager.js';
-import { initTokenSecret } from './auth/token.js';
+import { authRoutes } from './routes/auth.js';
+import { createBoardRoutes } from './routes/boards.js';
+import { createCheckpointRoutes } from './routes/checkpoints.js';
+import { createHealthRoutes } from './routes/health.js';
+import { createWsRoutes } from './routes/ws.js';
 
 export async function buildApp() {
   const env = loadEnv();
@@ -40,17 +40,18 @@ export async function buildApp() {
 
   // Security: CSP headers (relaxed for WebSocket + dev)
   await app.register(helmet, {
-    contentSecurityPolicy: env.NODE_ENV === 'production'
-      ? {
-          directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'"],
-            connectSrc: ["'self'", 'wss:'],
-            imgSrc: ["'self'", 'data:', 'blob:'],
-          },
-        }
-      : false,
+    contentSecurityPolicy:
+      env.NODE_ENV === 'production'
+        ? {
+            directives: {
+              defaultSrc: ["'self'"],
+              scriptSrc: ["'self'"],
+              styleSrc: ["'self'", "'unsafe-inline'"],
+              connectSrc: ["'self'", 'wss:'],
+              imgSrc: ["'self'", 'data:', 'blob:'],
+            },
+          }
+        : false,
   });
 
   // Plugins
@@ -59,7 +60,7 @@ export async function buildApp() {
   await registerWebSocket(app);
 
   // Routes
-  await app.register(healthRoutes);
+  await app.register(createHealthRoutes(roomManager));
   await app.register(authRoutes);
   await app.register(createWsRoutes(roomManager));
   await app.register(createCheckpointRoutes(roomManager));
